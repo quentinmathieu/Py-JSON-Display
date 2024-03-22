@@ -1,17 +1,16 @@
 from PyQt6.QtWidgets import *
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import *
 from PyQt6.QtCore import Qt
 import json
 import os
 
 
 def main():
-    print(os.listdir())
     app = QApplication([])
     window = QWidget()
     window.setGeometry(50, 100, 800, 700)
-    window.setWindowTitle("Title!")
-    window.setStyleSheet("border-width: 0px; border-style: solid")
+    # window.setWindowFlag(Qt.WindowType.FramelessWindowHint|Qt.WindowType.WindowMaximizeButtonHint)
+    window.setWindowTitle("Programm")
     
     # add a scroll area that is resizable
     scrollArea = QScrollArea()
@@ -41,20 +40,28 @@ def main():
             # break
             categoryWidget = QWidget()
             categoryWidget.setLayout(categoryLayout)
-            categoryWidget.setStyleSheet("background-color: white;")
+            categoryWidget.setStyleSheet("background-color: white; border-radius:10px")
             scrollLayout.addWidget(categoryWidget)
-    
+    scrollWidget.setStyleSheet("margin:0;")
     # Set the widget inside the scroll area
     scrollArea.setWidget(scrollWidget)
     
     # Create a layout for the main window
     mainLayout = QVBoxLayout(window)
-    scrollArea.setStyleSheet("background-color: #faa805;")
 
     
     # Add the scroll area to the main layout
     mainLayout.addWidget(scrollArea)
+    mainLayout.setContentsMargins(0, 0, 0, 0)
     
+    window.setStyleSheet(
+        """
+        QWidget{ background-color: #faa307;margin:0;} 
+        QScrollBar{height: 0; width: 0;}
+        QMainWindow{border-radius: 10px;background-color: transparent }
+        
+        """
+    )
     window.setLayout(mainLayout)
     window.show()
     app.exec()
