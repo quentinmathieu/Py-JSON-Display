@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>795</width>
     <height>700</height>
    </rect>
   </property>
@@ -35,7 +35,7 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <widget class="QScrollArea" name="scrollArea">
+   <widget class="QScrollArea" name="scrollArea_3">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -56,6 +56,90 @@
        <height>698</height>
       </rect>
      </property>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>800</width>
+        <height>700</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>800</width>
+        <height>700</height>
+       </size>
+      </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+      <property name="movable">
+       <bool>false</bool>
+      </property>
+      <widget class="QWidget" name="dwwmTab">
+       <attribute name="title">
+        <string>DWWM</string>
+       </attribute>
+       <widget class="QScrollArea" name="DwwmScrollArea">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>797</width>
+          <height>700</height>
+         </rect>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents_2">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>795</width>
+           <height>698</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="ranTab">
+       <attribute name="title">
+        <string>RAN</string>
+       </attribute>
+       <widget class="QScrollArea" name="RanScrollArea">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>797</width>
+          <height>680</height>
+         </rect>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents_4">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>795</width>
+           <height>678</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -64,7 +148,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>795</width>
      <height>21</height>
     </rect>
    </property>
