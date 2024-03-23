@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
 from PyQt6.QtGui import *
@@ -17,6 +16,8 @@ class MyGUI(QMainWindow):
         self.setFixedSize(800,700)
         self.move(50,50)
         self.show()
+        self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint)
+
         # self.centralwidget.setStyleSheet("background-color: rgba(0, 120, 185, 60)")
         # #14232A
         self.setStyleSheet(
@@ -38,15 +39,20 @@ class MyGUI(QMainWindow):
             globalCourses = json.load(jsonFile)
             for categoriesIndex in globalCourses:
                 categoryLayout = QVBoxLayout()
-                label = QLabel("========================\n{}\n========================\n".format(categoriesIndex))
+                categoryLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                label = QLabel("========================\n{}\n========================".format(categoriesIndex))
                 
                 # disable horizontal scroll
                 label.setWordWrap(True)
                 label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                label.setStyleSheet("font-size:18px")
                 categoryLayout.addWidget(label)
                 category = globalCourses[categoriesIndex]
                 for course in category:
                     courseBtn = QPushButton(text=course["nom"],parent=self)
+                    courseBtn.setStyleSheet("background-color: #205F95; border-radius:20;color: white; font-weight:600; font-size:15px")
+                    courseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+                    courseBtn.setFixedHeight(100)
                     test = ""
                     
                     for file in course['files']:
@@ -56,8 +62,11 @@ class MyGUI(QMainWindow):
                 categoryWidget = QWidget()
                 categoryWidget.setLayout(categoryLayout)
                 categoryWidget.setStyleSheet("background-color: white; border-radius:5; margin:0 10 30 10")
+                categoryWidget.setContentsMargins(0, 0, 0, 30)
                 scrollLayout.addWidget(categoryWidget)
                 # break
+                if(scrollArea == self.RanScrollArea):
+                    break
         scrollArea.setWidget(scrollWidget)
     
     def copyBuffer(self, globalCourses):
@@ -70,7 +79,6 @@ class MyGUI(QMainWindow):
         for course in globalCourses[categoryName]:
             
             if course['nom'] == courseName:
-                print(course['description'].encode('utf-8').decode('utf-8'))
                 description = course['description']
                 clipboard = description
                 for file in course['files']:
