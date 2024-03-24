@@ -16,7 +16,8 @@ class MyGUI(QMainWindow):
         self.setFixedSize(800,700)
         self.move(50,50)
         self.show()
-        self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint)
+        self.setWindowTitle('Training')
+        # self.setWindowFlags(Qt.WindowType.FramelessWindowHint|Qt.WindowType.WindowSystemMenuHint)
 
         # self.centralwidget.setStyleSheet("background-color: rgba(0, 120, 185, 60)")
         # #14232A
@@ -27,7 +28,7 @@ class MyGUI(QMainWindow):
         QMainWindow{border-radius: 10px;background-color: transparent}
         
         """)
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
         self.tabWidget.setStyleSheet("border:0px")
         self.DwwmTab()
     
@@ -40,19 +41,22 @@ class MyGUI(QMainWindow):
             for categoriesIndex in globalCourses:
                 categoryLayout = QVBoxLayout()
                 categoryLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                label = QLabel("========================\n{}\n========================".format(categoriesIndex))
+                label = QLabel("\n{}".format(categoriesIndex))
                 
                 # disable horizontal scroll
                 label.setWordWrap(True)
                 label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                label.setStyleSheet("font-size:18px")
+                label.setStyleSheet("font-size:24px;color:#153754;font-weight:600;font-family: 'Comic Sans';")
                 categoryLayout.addWidget(label)
                 category = globalCourses[categoriesIndex]
                 for course in category:
                     courseBtn = QPushButton(text=course["nom"],parent=self)
-                    courseBtn.setStyleSheet("background-color: #205F95; border-radius:20;color: white; font-weight:600; font-size:15px")
+                    courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:15;color: white; font-weight:600; font-size:15px;padding :10px")
+                    # stylesheet = "QWidget {background-color: qlineargradient(x1: 0, x2: 1, stop: 0 red, stop: 1 blue)}"
+
                     courseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
                     courseBtn.setFixedHeight(100)
+
                     test = ""
                     
                     for file in course['files']:
