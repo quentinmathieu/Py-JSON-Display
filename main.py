@@ -87,19 +87,27 @@ class MyGUI(QMainWindow):
                 label.setStyleSheet("font-size:24px;color:#153754;font-weight:600;font-family: 'Comic Sans';")
                 categoryLayout.addWidget(label)
                 category = globalCourses[categoriesIndex]
+                coursesLayout = QGridLayout()
+                count = 0
                 for course in category:
                     #add Btn for each course
                     courseBtn = QPushButton(text=course["nom"],parent=self)
-                    courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:15;color: white; font-weight:600; font-size:15px;padding :10px")
+                    courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
                     courseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-                    courseBtn.setFixedHeight(100)
+                    courseBtn.setFixedHeight(60)
 
                     # trigger copy to clipboard on click
                     courseBtn.clicked.connect(lambda : self.copyBuffer(globalCourses))
-                    categoryLayout.addWidget(courseBtn)
+                    courseBtn.setSizePolicy(QSizePolicy.Policy.Preferred,QSizePolicy.Policy.Preferred)
+                    coursesLayout.addWidget(courseBtn,  count, 0)
+                    # coursesLayout.addWidget(courseBtn,  count//2, count%2)
+                    count+=1
+                coursesWidget = QWidget()
+                coursesWidget.setLayout(coursesLayout)
                 categoryWidget = QWidget()
                 categoryWidget.setLayout(categoryLayout)
-                categoryWidget.setStyleSheet("background-color: white; border-radius:5; margin:0 10 30 10")
+                categoryLayout.addWidget(coursesWidget)
+                categoryWidget.setStyleSheet("background-color: white; border-radius:5; margin:0 10 10 10")
                 categoryWidget.setContentsMargins(0, 0, 0, 30)
                 scrollLayout.addWidget(categoryWidget)
                 # break
@@ -109,15 +117,16 @@ class MyGUI(QMainWindow):
     
     def copyBuffer(self, globalCourses):
         
-        categoryName = self.sender().parent().findChild(QLabel).text()
-        categoryName = categoryName.replace("==","").replace("\n","")
-        
+        categoryName = self.sender().parent().parent().findChild(QLabel).text()
+        categoryName = categoryName.replace("\n","")
+        print(categoryName)
         courseName = self.sender().text()
         klembord.init()
         for course in globalCourses[categoryName]:
             
             
             if course['nom'] == courseName:
+                print("ok")
 
                 # add description to the clipboard var
                 clipboard = course['description']
@@ -134,10 +143,14 @@ class MyGUI(QMainWindow):
 
     
     def on_click(self):
-        self.videoInfos.setText("Prosessing...")
-        file_paths = [self.filesList.item(x).text() for x in range(self.filesList.count())]
         self.setStatusInterface(False)
+        self.videoInfos.setText("Prosessing...")
+
+        # concat all the file paths in a txt file
+        file_paths = [self.filesList.item(x).text() for x in range(self.filesList.count())]
+
         
+
         if len(file_paths) < 2:
             self.setStatusInterface(True)
             self.videoInfos.setText("Select at least 2 videos to concatenate.")
@@ -199,6 +212,7 @@ class MyGUI(QMainWindow):
             event.ignore()
 
     def dropEvent(self, event):
+        self.setStatusInterface(True)
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         files.sort()
         
@@ -207,9 +221,11 @@ class MyGUI(QMainWindow):
                 self.filesList.addItem(f)
 
     def clearList(self):
+        self.setStatusInterface(True)
         self.filesList.clear()
 
     def deleteFromList(self):
+        self.setStatusInterface(True)
         listItems=self.filesList.selectedItems()
         if not listItems: return        
         for item in listItems:
@@ -229,6 +245,7 @@ class MyGUI(QMainWindow):
         self.videoInfos.setText("")
 
     def crompressVideos(self):
+        self.setStatusInterface(True)
         self.videoInfos.setText("WIP")  
 
 def main():
