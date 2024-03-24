@@ -30,7 +30,6 @@ class ConcatenateThread(QThread):
                 self.myGui.setStatusInterface(True)
                 self.myGui.videoInfos.setText("Videos concatenated and saved as \n"+self.output_file.replace('\\',"/"))
                 output_message = "Concatenation completed successfully."
-                print(self.concat_file_path)
 
                 # Clean up temporary files
                 os.remove(self.concat_file_path)
@@ -119,14 +118,12 @@ class MyGUI(QMainWindow):
         
         categoryName = self.sender().parent().parent().findChild(QLabel).text()
         categoryName = categoryName.replace("\n","")
-        print(categoryName)
         courseName = self.sender().text()
         klembord.init()
         for course in globalCourses[categoryName]:
             
             
             if course['nom'] == courseName:
-                print("ok")
 
                 # add description to the clipboard var
                 clipboard = course['description']
@@ -252,7 +249,6 @@ def main():
     try :
         # Add ffmpeg to the PATH
         ffmpegPath= os.path.dirname(os.path.realpath(__file__))+"\\ffmpeg\\bin"
-        print(ffmpegPath)
         os.environ['PATH'] = ffmpegPath
     except Exception as error:
         print("An exception occurred:"+ str(error))
