@@ -8,7 +8,7 @@ import ffmpeg
 import klembord
 
 
-# requirements : pyQt6, pyperclip, klembord, ffmpeg-python
+# requirements : pyQt6, klembord, ffmpeg-python
 
 class ConcatenateThread(QThread):
         finished = pyqtSignal(str)
@@ -92,7 +92,10 @@ class MyGUI(QMainWindow):
                     #add Btn for each course*
                     if (type in course['type']):
                         courseBtn = QPushButton(text=course["nom"],parent=self)
-                        courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
+                        if "OPT" in course['type']:
+                            courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #A47500, stop: 1 #8C5000); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
+                        else:
+                            courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
                         courseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
                         courseBtn.setFixedHeight(60)
 
