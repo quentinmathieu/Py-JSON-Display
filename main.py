@@ -10,7 +10,6 @@ import klembord
 
 # requirements : pyQt6, pyperclip, klembord, ffmpeg-python
 
-
 class ConcatenateThread(QThread):
         finished = pyqtSignal(str)
         error = pyqtSignal(str)
@@ -69,7 +68,8 @@ class MyGUI(QMainWindow):
         self.compressBtn.clicked.connect(lambda: self.crompressVideos())
         self.delListBtn.clicked.connect(lambda: self.deleteFromList())
     
-    def loadCourses(self, jsonFile, scrollArea):
+    def loadCourses(self, jsonFile, scrollArea, type):
+        
         scrollWidget = QWidget()
         scrollWidget.setStyleSheet("margin:0 0 50 0")
         scrollLayout = QVBoxLayout(scrollWidget)
@@ -89,18 +89,19 @@ class MyGUI(QMainWindow):
                 coursesLayout = QGridLayout()
                 count = 0
                 for course in category:
-                    #add Btn for each course
-                    courseBtn = QPushButton(text=course["nom"],parent=self)
-                    courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
-                    courseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-                    courseBtn.setFixedHeight(60)
+                    #add Btn for each course*
+                    if (type in course['type']):
+                        courseBtn = QPushButton(text=course["nom"],parent=self)
+                        courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
+                        courseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+                        courseBtn.setFixedHeight(60)
 
-                    # trigger copy to clipboard on click
-                    courseBtn.clicked.connect(lambda : self.copyBuffer(globalCourses))
-                    courseBtn.setSizePolicy(QSizePolicy.Policy.Preferred,QSizePolicy.Policy.Preferred)
-                    coursesLayout.addWidget(courseBtn,  count, 0)
-                    # coursesLayout.addWidget(courseBtn,  count//2, count%2)
-                    count+=1
+                        # trigger copy to clipboard on click
+                        courseBtn.clicked.connect(lambda : self.copyBuffer(globalCourses))
+                        courseBtn.setSizePolicy(QSizePolicy.Policy.Preferred,QSizePolicy.Policy.Preferred)
+                        coursesLayout.addWidget(courseBtn,  count, 0)
+                        # coursesLayout.addWidget(courseBtn,  count//2, count%2)
+                        count+=1
                 coursesWidget = QWidget()
                 coursesWidget.setLayout(coursesLayout)
                 categoryWidget = QWidget()
@@ -108,7 +109,8 @@ class MyGUI(QMainWindow):
                 categoryLayout.addWidget(coursesWidget)
                 categoryWidget.setStyleSheet("background-color: white; border-radius:5; margin:0 10 10 10")
                 categoryWidget.setContentsMargins(0, 0, 0, 30)
-                scrollLayout.addWidget(categoryWidget)
+                if count > 0:
+                    scrollLayout.addWidget(categoryWidget)
                 # break
                 if(scrollArea == self.RanScrollArea):
                     break
@@ -135,8 +137,8 @@ class MyGUI(QMainWindow):
         klembord.set_with_rich_text('', clipboard.replace("\n","<br>"))
 
     def DwwmTab(self):
-        self.loadCourses("JSON\\DL.json", (self.DwwmScrollArea))
-        self.loadCourses("JSON\\DL.json", (self.RanScrollArea))
+        self.loadCourses("JSON\\DL.json", (self.DwwmScrollArea), "DWWM")
+        self.loadCourses("JSON\\DL.json", (self.RanScrollArea), "RAN")
 
     
     def on_click(self):
