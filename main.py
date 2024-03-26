@@ -67,6 +67,35 @@ class MyGUI(QMainWindow):
         self.concatBtn.clicked.connect(lambda: self.on_click())
         self.compressBtn.clicked.connect(lambda: self.crompressVideos())
         self.delListBtn.clicked.connect(lambda: self.deleteFromList())
+        
+        
+        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Ampersand),self)
+        self.shortcut.activated.connect(self.firstTab)
+        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Eacute),self)
+        self.shortcut.activated.connect(self.secondTab)
+        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_QuoteDbl),self)
+        self.shortcut.activated.connect(self.thirdTab)
+        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Apostrophe),self)
+        self.shortcut.activated.connect(self.fourthTab)
+        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
+        self.shortcut.activated.connect(self.escape)
+
+    def firstTab(self):
+        self.tabWidget.setCurrentIndex(0)
+        self.showNormal()
+    def secondTab(self):
+        self.tabWidget.setCurrentIndex(1)
+        self.showNormal()
+    def thirdTab(self):
+        self.tabWidget.setCurrentIndex(2)
+        self.showNormal()
+    def fourthTab(self):
+        self.tabWidget.setCurrentIndex(2)
+        self.showFullScreen()
+    def escape(self):
+        self.showNormal()
+    
+
     
     def loadCourses(self, jsonFile, scrollArea, type):
         
