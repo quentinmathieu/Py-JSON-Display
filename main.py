@@ -37,7 +37,6 @@ class ConcatenateThread(QThread):
             except Exception as e:
                 self.error.emit(str(e))
 
-
 class MyGUI(QMainWindow):
 
     def __init__(self):
@@ -85,9 +84,7 @@ class MyGUI(QMainWindow):
         if size == "normal":
             self.showNormal()
         else:
-            self.showFullScreen()
-    
-
+            self.showFullScreen() 
     
     def loadCourses(self, jsonFile, scrollArea, type):
         
@@ -138,7 +135,7 @@ class MyGUI(QMainWindow):
                 # break
                 if(scrollArea == self.RanScrollArea):
                     break
-        scrollArea.setWidget(scrollWidget)       
+        scrollArea.setWidget(scrollWidget)   
     
     def copyBuffer(self, globalCourses):
         categoryName = self.sender().parent().parent().findChild(QLabel).text()
@@ -230,10 +227,6 @@ class MyGUI(QMainWindow):
         # self.concatThread.finished.connect(self.concatenationFinished)
         # self.concatThread.error.connect(self.concatenationError)
         self.concatThread.start()
-
-       
-        
-
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
