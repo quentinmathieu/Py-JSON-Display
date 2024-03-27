@@ -152,15 +152,17 @@ class MyGUI(QMainWindow):
 
                 # add description to the clipboard var
                 clipboard = course['description']
-                
+                modifiers = QApplication.keyboardModifiers()
+
                 for file in course['files']:
                    # add path's files to the clipboard var
                     clipboard += file['name']+" \n"
-                    modifiers = QApplication.keyboardModifiers()
-                    
-                    self.fileName =file['name']
                     if modifiers == Qt.KeyboardModifier.ControlModifier:                 
-                        webbrowser.open(self.fileName, new=2, autoraise=True)
+                        webbrowser.open(file['name'], new=2, autoraise=True)
+                if modifiers == Qt.KeyboardModifier.ControlModifier:
+                    print('OK')
+                    for correction in course['correction_files']:
+                        webbrowser.open(correction['name'], new=2, autoraise=True)
 
         # set the clipboard with all html support (thx https://github.com/OzymandiasTheGreat/klembord)
         klembord.set_with_rich_text('', clipboard.replace("\n","<br>"))
