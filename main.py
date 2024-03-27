@@ -6,6 +6,7 @@ import os, sys, json, webbrowser
 from datetime import datetime
 import ffmpeg
 import klembord
+import psutil
 
 
 # requirements : pyQt6, klembord, ffmpeg-python
@@ -14,26 +15,27 @@ class ConcatenateThread(QThread):
         finished = pyqtSignal(str)
         error = pyqtSignal(str)
 
-        def __init__(self, concat_file_path, output_file, myGui):
+        def __init__(self, concat_file_path, output_file, myGui, crf = 0):
             super().__init__()
             self.concat_file_path = concat_file_path
             self.output_file = output_file
             self.myGui = myGui
+            self.crf = crf
 
         def run(self):
             try:
-                #try concatenate
-                ffmpeg.input(self.concat_file_path, format='concat', safe=0).output(self.output_file, c='copy').run()
-
-                #notif user
-                self.myGui.setStatusInterface(True)
-                self.myGui.videoInfos.setText("Videos concatenated and saved as \n"+self.output_file.replace('\\',"/"))
-                output_message = "Concatenation completed successfully."
+                if self.crf>0:
+                    ffmpeg.input(self.concat_file_path, format='concat', safe=0).output(self.output_file, vcodec='libx264', crf=self.crf).run()
+                    self.myGui.videoInfos.setText("Videos concatenated and saved as \n"+self.output_file.replace('\\',"/"))
+                else:
+                    ffmpeg.input(self.concat_file_path, format='concat', safe=0).output(self.output_file, c='copy').run()
+                    self.myGui.videoInfos.setText("Videos concatenated and saved as \n"+self.output_file.replace('\\',"/"))
+                    
 
                 # Clean up temporary files
                 os.remove(self.concat_file_path)
-                
-                self.finished.emit(output_message)
+                self.myGui.setStatusInterface(True)
+                self.finished.emit("ok")
             except Exception as e:
                 self.error.emit(str(e))
 
@@ -213,7 +215,7 @@ class MyGUI(QMainWindow):
 
         # Generate the concat demuxer file
         concat_content = [f"file '{file_path}'" for file_path in filtered_files]
-        concat_file_path =     output_file = os.path.join(last_file_dir, "concat.txt") 
+        concat_file_path =  os.path.join(last_file_dir, "concat.txt") 
 
         with open(concat_file_path, "w") as concat_file:
             concat_file.write('\n'.join(concat_content))
@@ -224,8 +226,38 @@ class MyGUI(QMainWindow):
         output_file = os.path.join(last_file_dir, f"output_{current_time}.mp4") 
 
         self.concatThread = ConcatenateThread(concat_file_path, output_file, self)
-        # self.concatThread.finished.connect(self.concatenationFinished)
-        # self.concatThread.error.connect(self.concatenationError)
+        self.stopBtn.clicked.connect(lambda: self.stop())
+        self.concatThread.start()
+
+    def crompressVideos(self):
+        self.setStatusInterface(False)
+        self.videoInfos.setText("Prosessing...")
+        file_paths = [self.filesList.item(x).text() for x in range(self.filesList.count())]
+        
+
+        if len(file_paths) < 1:
+            self.setStatusInterface(True)
+            self.videoInfos.setText("Select at least 1 video to convert.")
+            return
+
+        # Filter videos by codec
+        filtered_files = [f for f in file_paths]
+
+        # Get the directory of the last file for the ouput path
+        last_file_dir = os.path.dirname(file_paths[-1])
+
+        # Generate the concat demuxer file
+        concat_content = [f"file '{file_path}'" for file_path in filtered_files]
+        concat_file_path = os.path.join(last_file_dir, "concat.txt") 
+        
+        with open(concat_file_path, "w") as concat_file:
+            concat_file.write('\n'.join(concat_content))
+        
+        # Get current timestamp to create output filename to the same directory as the last input file
+        current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        output_file = os.path.join(last_file_dir, f"output_{current_time}_compress.mp4") 
+        self.concatThread = ConcatenateThread(concat_file_path, output_file, self, self.compressSlider.value())
+        self.stopBtn.clicked.connect(lambda: self.stop())
         self.concatThread.start()
 
     def dragEnterEvent(self, event):
@@ -256,6 +288,7 @@ class MyGUI(QMainWindow):
 
 
     def setStatusInterface(self, status):
+        invers = False if status else True
         self.clearBtn.setEnabled(status)
         self.concatBtn.setEnabled(status)
         self.compressBtn.setEnabled(status)
@@ -263,13 +296,23 @@ class MyGUI(QMainWindow):
         self.compressSlider.setEnabled(status)
         self.filesList.setEnabled(status)
         self.dropArea.setEnabled(status)
+        self.stopBtn.setEnabled(invers)
 
         self.setAcceptDrops(status)
-        self.videoInfos.setText("")
 
-    def crompressVideos(self):
+    def stop(self):
+        #stop concat / compress
+        PROCNAME = "ffmpeg.exe"
+
+        
+        for proc in psutil.process_iter():
+            # check whether the process name matches
+            if proc.name() == PROCNAME:
+                proc.kill()
         self.setStatusInterface(True)
-        self.videoInfos.setText("WIP")  
+        self.videoInfos.setText("CANCELED")
+
+ 
 
 def main():
     try :
