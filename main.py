@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import *
 from PyQt6 import uic
 from PyQt6.QtGui import *
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
-import os, sys, json
+import os, sys, json, webbrowser
 from datetime import datetime
 import ffmpeg
 import klembord
@@ -70,30 +70,22 @@ class MyGUI(QMainWindow):
         
         
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Ampersand),self)
-        self.shortcut.activated.connect(self.firstTab)
+        self.shortcut.activated.connect(lambda: self.changeTab(0))
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Eacute),self)
-        self.shortcut.activated.connect(self.secondTab)
+        self.shortcut.activated.connect(lambda: self.changeTab(1))
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_QuoteDbl),self)
-        self.shortcut.activated.connect(self.thirdTab)
-        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Apostrophe),self)
-        self.shortcut.activated.connect(self.fourthTab)
+        self.shortcut.activated.connect(lambda: self.changeTab(2))
+        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Aacute),self)
+        self.shortcut.activated.connect(lambda: self.changeTab(2, "fullsize"))
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
-        self.shortcut.activated.connect(self.escape)
+        self.shortcut.activated.connect(lambda: self.changeTab(0))
 
-    def firstTab(self):
-        self.tabWidget.setCurrentIndex(0)
-        self.showNormal()
-    def secondTab(self):
-        self.tabWidget.setCurrentIndex(1)
-        self.showNormal()
-    def thirdTab(self):
-        self.tabWidget.setCurrentIndex(2)
-        self.showNormal()
-    def fourthTab(self):
-        self.tabWidget.setCurrentIndex(2)
-        self.showFullScreen()
-    def escape(self):
-        self.showNormal()
+    def changeTab(self, tabNum, size = "normal"):
+        self.tabWidget.setCurrentIndex(tabNum)
+        if size == "normal":
+            self.showNormal()
+        else:
+            self.showFullScreen()
     
 
     
@@ -146,10 +138,9 @@ class MyGUI(QMainWindow):
                 # break
                 if(scrollArea == self.RanScrollArea):
                     break
-        scrollArea.setWidget(scrollWidget)
+        scrollArea.setWidget(scrollWidget)       
     
     def copyBuffer(self, globalCourses):
-        
         categoryName = self.sender().parent().parent().findChild(QLabel).text()
         categoryName = categoryName.replace("\n","")
         courseName = self.sender().text()
@@ -164,7 +155,14 @@ class MyGUI(QMainWindow):
                 
                 for file in course['files']:
                    # add path's files to the clipboard var
-                   clipboard += file['name']+" \n"
+                    clipboard += file['name']+" \n"
+                    modifiers = QApplication.keyboardModifiers()
+                    
+                    self.fileName =file['name']
+                    self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
+                    if modifiers == Qt.KeyboardModifier.ControlModifier:                 
+                        webbrowser.open(self.fileName, new=2, autoraise=False)
+
         # set the clipboard with all html support (thx https://github.com/OzymandiasTheGreat/klembord)
         klembord.set_with_rich_text('', clipboard.replace("\n","<br>"))
 
