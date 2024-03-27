@@ -68,18 +68,18 @@ class MyGUI(QMainWindow):
         self.compressBtn.clicked.connect(lambda: self.crompressVideos())
         self.delListBtn.clicked.connect(lambda: self.deleteFromList())
         
-        
-        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Ampersand),self)
+        # diffrents tab shortcuts
+        self.shortcut = QShortcut(QKeySequence('Ctrl+a'),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
-        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Eacute),self)
-        self.shortcut.activated.connect(lambda: self.changeTab(1))
-        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_QuoteDbl),self)
+        self.shortcut = QShortcut(QKeySequence('Ctrl+z'),self)
+        self.shortcut.activated.connect(lambda: self.changeTab(1))  
+        self.shortcut = QShortcut(QKeySequence('Ctrl+e'),self)
         self.shortcut.activated.connect(lambda: self.changeTab(2))
-        self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Aacute),self)
+        self.shortcut = QShortcut(QKeySequence('Ctrl+tab'),self)
         self.shortcut.activated.connect(lambda: self.changeTab(2, "fullsize"))
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
-
+        
     def changeTab(self, tabNum, size = "normal"):
         self.tabWidget.setCurrentIndex(tabNum)
         if size == "normal":
@@ -159,9 +159,8 @@ class MyGUI(QMainWindow):
                     modifiers = QApplication.keyboardModifiers()
                     
                     self.fileName =file['name']
-                    self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
                     if modifiers == Qt.KeyboardModifier.ControlModifier:                 
-                        webbrowser.open(self.fileName, new=2, autoraise=False)
+                        webbrowser.open(self.fileName, new=2, autoraise=True)
 
         # set the clipboard with all html support (thx https://github.com/OzymandiasTheGreat/klembord)
         klembord.set_with_rich_text('', clipboard.replace("\n","<br>"))
