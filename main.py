@@ -9,7 +9,7 @@ import klembord
 import psutil
 
 
-# requirements : pyQt6, klembord, ffmpeg-python
+# requirements : pyQt6, klembord, ffmpeg-python, psutil
 
 class ConcatenateThread(QThread):
         finished = pyqtSignal(str)
@@ -122,8 +122,8 @@ class MyGUI(QMainWindow):
                         # trigger copy to clipboard on click
                         courseBtn.clicked.connect(lambda : self.copyBuffer(globalCourses))
                         courseBtn.setSizePolicy(QSizePolicy.Policy.Preferred,QSizePolicy.Policy.Preferred)
-                        coursesLayout.addWidget(courseBtn,  count, 0)
-                        # coursesLayout.addWidget(courseBtn,  count//2, count%2)
+                        # coursesLayout.addWidget(courseBtn,  count, 0)
+                        coursesLayout.addWidget(courseBtn,  count//3, count%3)
                         count+=1
                 coursesWidget = QWidget()
                 coursesWidget.setLayout(coursesLayout)
@@ -148,27 +148,35 @@ class MyGUI(QMainWindow):
             
             
             if course['nom'] == courseName:
-
-                # add description to the clipboard var
-                clipboard = course['description']
+                try:
+                    # add description to the clipboard var
+                    clipboard = course['description']
+                except:
+                    clipboard = ""
                 modifiers = QApplication.keyboardModifiers()
-
-                for file in course['files']:
-                   # add path's files to the clipboard var
-                    clipboard += file['name']+" \n"
-                    if modifiers == Qt.KeyboardModifier.ControlModifier:                 
-                        webbrowser.open(file['name'], new=2, autoraise=True)
-                if modifiers == Qt.KeyboardModifier.ControlModifier:
-                    print('OK')
-                    for correction in course['correction_files']:
-                        webbrowser.open(correction['name'], new=2, autoraise=True)
+                try:
+                    for file in course['files']:
+                    # add path's files to the clipboard var
+                        clipboard += file['name']+" \n"
+                        if modifiers == Qt.KeyboardModifier.ControlModifier:                 
+                            webbrowser.open(file['name'], new=2, autoraise=True)
+                except:
+                    False
+                try:
+                    if modifiers == Qt.KeyboardModifier.ControlModifier:
+                        for correction in course['correction_files']:
+                            webbrowser.open(correction['name'], new=2, autoraise=True)
+                except:
+                    False
 
         # set the clipboard with all html support (thx https://github.com/OzymandiasTheGreat/klembord)
-        klembord.set_with_rich_text('', clipboard.replace("\n","<br>"))
+        klembord.set_with_rich_text('', clipboard.replace("\n","<br>")) 
 
     def DwwmTab(self):
         self.loadCourses("JSON\\DL.json", (self.DwwmScrollArea), "DWWM")
         self.loadCourses("JSON\\DL.json", (self.RanScrollArea), "RAN")
+        self.loadCourses("JSON\\DL.json", (self.cdaScrollArea), "CDA")
+        self.loadCourses("JSON\\DL.json", (self.cdaRanScrollArea), "CDARAN")
 
     
     def on_click(self):

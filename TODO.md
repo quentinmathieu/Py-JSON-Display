@@ -16,6 +16,7 @@
 7. C.Add searchbar
 8. ~~S.Add tab num shortcut~~
 9. ~~M.read all files and corrections~~
+10. C.Add different colors for different trainings
 
 
 

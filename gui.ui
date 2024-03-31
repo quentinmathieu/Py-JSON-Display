@@ -78,7 +78,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -146,7 +146,7 @@
        <attribute name="title">
         <string>CDA</string>
        </attribute>
-       <widget class="QScrollArea" name="RanScrollArea_2">
+       <widget class="QScrollArea" name="cdaScrollArea">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -174,7 +174,7 @@
        <attribute name="title">
         <string>CDA-RAN</string>
        </attribute>
-       <widget class="QScrollArea" name="RanScrollArea_3">
+       <widget class="QScrollArea" name="cdaRanScrollArea">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -210,7 +210,7 @@
          <rect>
           <x>60</x>
           <y>10</y>
-          <width>681</width>
+          <width>682</width>
           <height>621</height>
          </rect>
         </property>
@@ -544,7 +544,7 @@ QSlider::handle:horizontal:disabled{
              <item>
               <widget class="QLabel" name="label_3">
                <property name="text">
-                <string>Lightweigth</string>
+                <string>Less weighty</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -746,7 +746,7 @@ color:#636363
             <property name="geometry">
              <rect>
               <x>20</x>
-              <y>570</y>
+              <y>560</y>
               <width>321</width>
               <height>31</height>
              </rect>
@@ -762,7 +762,7 @@ color:#636363
             <property name="geometry">
              <rect>
               <x>350</x>
-              <y>570</y>
+              <y>560</y>
               <width>51</width>
               <height>31</height>
              </rect>
@@ -1217,7 +1217,7 @@ color:#636363
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
