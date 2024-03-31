@@ -48,27 +48,21 @@ class MyGUI(QMainWindow):
         self.move(50,50)
         self.show()
         self.setWindowTitle('Training')
-        # self.setWindowFlags(Qt.WindowType.FramelessWindowHint|Qt.WindowType.WindowSystemMenuHint)
-        self.setStyleSheet(
-        """
-        QWidget{ margin:0; background : #F1F1F1; border-left: 0px;}
-        QScrollBar{background : none}
-        QMainWindow{border-radius: 10px;background-color: transparent}
-        
-        """)
-
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
         self.DwwmTab()
-
-        #enable D&D
-        self.setAcceptDrops(True)
-
+        
         # add clear & concat & concat/compress action's btn
         self.clearBtn.clicked.connect(lambda: self.clearList())
         self.concatBtn.clicked.connect(lambda: self.on_click())
         self.compressBtn.clicked.connect(lambda: self.crompressVideos())
         self.delListBtn.clicked.connect(lambda: self.deleteFromList())
         
+        self.addCatBtn.clicked.connect(lambda: self.addCategory())
+
+
+        self.categoriesList.model().rowsMoved.connect(self.refreshJson)
+
+
         # diffrents tab shortcuts
         self.shortcut = QShortcut(QKeySequence('Ctrl+a'),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
@@ -76,10 +70,34 @@ class MyGUI(QMainWindow):
         self.shortcut.activated.connect(lambda: self.changeTab(1))  
         self.shortcut = QShortcut(QKeySequence('Ctrl+e'),self)
         self.shortcut.activated.connect(lambda: self.changeTab(2))
+        self.shortcut = QShortcut(QKeySequence('Ctrl+r'),self)
+        self.shortcut.activated.connect(lambda: self.changeTab(3))
+        self.shortcut = QShortcut(QKeySequence('Ctrl+t'),self)
+        self.shortcut.activated.connect(lambda: self.changeTab(4))
         self.shortcut = QShortcut(QKeySequence('Ctrl+tab'),self)
-        self.shortcut.activated.connect(lambda: self.changeTab(2, "fullsize"))
+        self.shortcut.activated.connect(lambda: self.changeTab(5, "fullsize"))
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
+    
+    def refreshJson(self):
+        newJsonIndex = []
+        for index in range(self.categoriesList.count()):
+            newJsonIndex.append(self.categoriesList.item(index).text())
+           
+        newJson = {} 
+        for cat in newJsonIndex:
+            newJson[cat] = self.globalCourses[cat]            
+            
+        self.globalCourses = newJson
+        for cat in self.globalCourses:
+            print(cat)
+            
+        with open('JSON\\DL.json', 'w', encoding='utf8') as json_file:
+            json.dump( newJson,json_file, ensure_ascii=False, indent=2)
+        
+    
+    def addCategory(self):
+        self.categoriesList.addItem(self.lineCategoryAdd.text())
         
     def changeTab(self, tabNum, size = "normal"):
         self.tabWidget.setCurrentIndex(tabNum)
@@ -87,17 +105,23 @@ class MyGUI(QMainWindow):
             self.showNormal()
         else:
             self.showFullScreen() 
-    
+            
+    def sort_by_indexes(lst, indexes, reverse=False):
+        return [val for (_, val) in sorted(zip(indexes, lst), key=lambda x: \
+                x[0], reverse=reverse)]
+
     def loadCourses(self, jsonFile, scrollArea, type):
         
         scrollWidget = QWidget()
         scrollWidget.setStyleSheet("margin:0 0 50 0")
         scrollLayout = QVBoxLayout(scrollWidget)
         with open(jsonFile, encoding='utf-8') as jsonFile:
-            globalCourses = json.load(jsonFile)
-            for categoriesIndex in globalCourses:
+            self.globalCourses = json.load(jsonFile)
+            for categoriesIndex in self.globalCourses:
                 categoryLayout = QVBoxLayout()
                 categoryLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                if type == "DWWM":
+                    self.categoriesList.addItem(categoriesIndex)
 
                 #display category name
                 label = QLabel("\n{}".format(categoriesIndex))
@@ -105,7 +129,7 @@ class MyGUI(QMainWindow):
                 label.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 label.setStyleSheet("font-size:24px;color:#153754;font-weight:600;font-family: 'Comic Sans';")
                 categoryLayout.addWidget(label)
-                category = globalCourses[categoriesIndex]
+                category = self.globalCourses[categoriesIndex]
                 coursesLayout = QGridLayout()
                 count = 0
                 for course in category:
@@ -120,7 +144,7 @@ class MyGUI(QMainWindow):
                         courseBtn.setFixedHeight(60)
 
                         # trigger copy to clipboard on click
-                        courseBtn.clicked.connect(lambda : self.copyBuffer(globalCourses))
+                        courseBtn.clicked.connect(lambda : self.copyBuffer())
                         courseBtn.setSizePolicy(QSizePolicy.Policy.Preferred,QSizePolicy.Policy.Preferred)
                         # coursesLayout.addWidget(courseBtn,  count, 0)
                         coursesLayout.addWidget(courseBtn,  count//3, count%3)
@@ -139,12 +163,12 @@ class MyGUI(QMainWindow):
                     break
         scrollArea.setWidget(scrollWidget)   
     
-    def copyBuffer(self, globalCourses):
+    def copyBuffer(self):
         categoryName = self.sender().parent().parent().findChild(QLabel).text()
         categoryName = categoryName.replace("\n","")
         courseName = self.sender().text()
         klembord.init()
-        for course in globalCourses[categoryName]:
+        for course in self.globalCourses[categoryName]:
             
             
             if course['nom'] == courseName:
@@ -185,9 +209,6 @@ class MyGUI(QMainWindow):
 
         # concat all the file paths in a txt file
         file_paths = [self.filesList.item(x).text() for x in range(self.filesList.count())]
-
-        
-
         if len(file_paths) < 2:
             self.setStatusInterface(True)
             self.videoInfos.setText("Select at least 2 videos to concatenate.")
