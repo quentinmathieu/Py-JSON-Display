@@ -96,14 +96,14 @@ class MyGUI(QMainWindow):
             False
     
     def deleteItemFromList(self, list,type,action):
-        print(self.listCoursesByCat.selectedItems()[0].text())
+        remove = self.listCoursesByCat.selectedItems()[0].text()
 
         self.setStatusInterface(True)
         listItems=list.selectedItems()
         if not listItems: return
         for item in listItems:
             list.takeItem(list.row(item))
-        self.updateJson({"type":type,"action":action, "field":""})
+        self.updateJson({"type":type,"action":action, "field":remove})
             
     def updateJson(self, array):
         newCat = array['field'] if array["type"]=="category" and array["action"]=="add" else False
@@ -126,12 +126,9 @@ class MyGUI(QMainWindow):
             if cat != False:
                 categoryContent = []
                 for course in newJson[cat]:
-                    print(self.listCoursesByCat.selectedItems()[0].text())
-                    # if course['nom'] != self.listCoursesByCat.selectedItems()[0].text():
-                    #     categoryContent.append(course)
-                    # else:
-                    #     print(self.listCoursesByCat.selectedItems()[0].text())
-            # newJson[cat] = categoryContent
+                    if course['nom'] != array['field']:
+                        categoryContent.append(course)
+            newJson[cat] = categoryContent
         except:
             False
             
