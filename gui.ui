@@ -893,6 +893,42 @@ color:#636363
              <string>EDIT</string>
             </property>
            </widget>
+           <widget class="QPushButton" name="RefreshBtn">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>690</x>
+              <y>0</y>
+              <width>91</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton{background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #C03D3D, stop: 1 #562854); border-radius:5;color: white; font-weight:600;padding :10px}
+
+QPushButton:disabled {
+background-color:#989898;
+color:#636363
+}</string>
+            </property>
+            <property name="text">
+             <string>Refresh</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QWidget" name="coursesTab">
            <attribute name="title">
@@ -1211,6 +1247,42 @@ color:#636363
             </property>
             <property name="text">
              <string>Save</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="RefreshBtn2">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>690</x>
+              <y>0</y>
+              <width>91</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton{background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #C03D3D, stop: 1 #562854); border-radius:5;color: white; font-weight:600;padding :10px}
+
+QPushButton:disabled {
+background-color:#989898;
+color:#636363
+}</string>
+            </property>
+            <property name="text">
+             <string>Refresh</string>
             </property>
            </widget>
           </widget>

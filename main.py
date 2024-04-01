@@ -58,9 +58,11 @@ class MyGUI(QMainWindow):
         self.delListBtn.clicked.connect(lambda: self.deleteFromList())
         
         self.addCatBtn.clicked.connect(lambda: self.addCategory())
+        self.RefreshBtn2.clicked.connect(lambda: self.restart())
+        self.RefreshBtn.clicked.connect(lambda: self.restart())
 
 
-        self.categoriesList.model().rowsMoved.connect(self.refreshJson)
+        self.categoriesList.model().rowsMoved.connect(self.updateJson)
 
 
         # diffrents tab shortcuts
@@ -79,25 +81,32 @@ class MyGUI(QMainWindow):
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
     
-    def refreshJson(self):
+    def updateJson(self, newCat=0):
         newJsonIndex = []
         for index in range(self.categoriesList.count()):
             newJsonIndex.append(self.categoriesList.item(index).text())
            
         newJson = {} 
         for cat in newJsonIndex:
-            newJson[cat] = self.globalCourses[cat]            
-            
+            try:
+                newJson[cat] = self.globalCourses[cat]
+            except:
+                if (newCat):
+                    newJson[newCat]= {}
         self.globalCourses = newJson
-        for cat in self.globalCourses:
-            print(cat)
             
         with open('JSON\\DL.json', 'w', encoding='utf8') as json_file:
             json.dump( newJson,json_file, ensure_ascii=False, indent=2)
         
-    
+    def restart(self):
+        os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
+        
     def addCategory(self):
+        for index in range(self.categoriesList.count()):
+            if self.lineCategoryAdd.text() == self.categoriesList.item(index).text():
+                return False
         self.categoriesList.addItem(self.lineCategoryAdd.text())
+        self.updateJson(self.lineCategoryAdd.text())
         
     def changeTab(self, tabNum, size = "normal"):
         self.tabWidget.setCurrentIndex(tabNum)
@@ -132,23 +141,26 @@ class MyGUI(QMainWindow):
                 category = self.globalCourses[categoriesIndex]
                 coursesLayout = QGridLayout()
                 count = 0
-                for course in category:
-                    #add Btn for each course*
-                    if (type in course['type']):
-                        courseBtn = QPushButton(text=course["nom"],parent=self)
-                        if "OPT" in course['type']:
-                            courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #A47500, stop: 1 #8C5000); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
-                        else:
-                            courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
-                        courseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-                        courseBtn.setFixedHeight(60)
+                try:
+                    for course in category:
+                        #add Btn for each course*
+                        if (type in course['type'] or ("OPT"+type) in course['type']):
+                            courseBtn = QPushButton(text=course["nom"],parent=self)
+                            if ("OPT"+type) in course['type']:
+                                courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #A47500, stop: 1 #8C5000); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
+                            else:
+                                courseBtn.setStyleSheet("background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:10;color: white; font-weight:600; font-size:15px;padding :10px")
+                            courseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+                            courseBtn.setFixedHeight(60)
 
-                        # trigger copy to clipboard on click
-                        courseBtn.clicked.connect(lambda : self.copyBuffer())
-                        courseBtn.setSizePolicy(QSizePolicy.Policy.Preferred,QSizePolicy.Policy.Preferred)
-                        # coursesLayout.addWidget(courseBtn,  count, 0)
-                        coursesLayout.addWidget(courseBtn,  count//3, count%3)
-                        count+=1
+                            # trigger copy to clipboard on click
+                            courseBtn.clicked.connect(lambda : self.copyBuffer())
+                            courseBtn.setSizePolicy(QSizePolicy.Policy.Preferred,QSizePolicy.Policy.Preferred)
+                            # coursesLayout.addWidget(courseBtn,  count, 0)
+                            coursesLayout.addWidget(courseBtn,  count//3, count%3)
+                            count+=1
+                except:
+                    print('meh')
                 coursesWidget = QWidget()
                 coursesWidget.setLayout(coursesLayout)
                 categoryWidget = QWidget()
