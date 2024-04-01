@@ -753,7 +753,7 @@ color:#636363
              <string/>
             </property>
            </widget>
-           <widget class="QLineEdit" name="lineEdit_4">
+           <widget class="QLineEdit" name="lineCourseAdd">
             <property name="geometry">
              <rect>
               <x>20</x>

@@ -63,11 +63,13 @@ class MyGUI(QMainWindow):
         self.RefreshBtn2.clicked.connect(lambda: self.restart())
         self.RefreshBtn.clicked.connect(lambda: self.restart())
         
+        self.addCourseToCat.clicked.connect(lambda: self.addItemToList(self.listCoursesByCat, self.lineCourseAdd, "course","add"))
         self.delCourseFromCat.clicked.connect(lambda: self.deleteItemFromList(self.listCoursesByCat,"course","delete"))
+        self.listCoursesByCat.model().rowsMoved.connect(lambda: self.updateJson({"field":"course", "action":"move", "type":"course"}))
 
 
         self.categoriesList.itemSelectionChanged.connect(self.showCatCourses)
-        self.categoriesList.model().rowsMoved.connect(self.updateJson)
+        self.categoriesList.model().rowsMoved.connect(lambda: self.updateJson({"field":"category", "action":"move", "type":"category"}))
 
 
         # diffrents tab shortcuts
@@ -122,16 +124,21 @@ class MyGUI(QMainWindow):
                     newJson[newCat]= {}
         
         try:
-            cat= self.categoriesList.selectedItems()[0].text() if array["type"]=="course" and array["action"]=="delete" else False
+            cat= self.categoriesList.selectedItems()[0].text() if array["type"]=="course" and (array["action"]=="delete" or array["action"]=="move")  else False
             if cat != False:
                 categoryContent = []
-                for course in newJson[cat]:
-                    if course['nom'] != array['field']:
-                        categoryContent.append(course)
+                for index in range(self.listCoursesByCat.count()):
+                    for course in newJson[cat]:
+                        if course['nom']==self.listCoursesByCat.item(index).text() and course['nom'] != array['field']:
+                            categoryContent.append(course)
             newJson[cat] = categoryContent
         except:
             False
-            
+        try:
+            cat= self.categoriesList.selectedItems()[0].text() if array["type"]=="course" and array["action"]=="add" else False
+            newJson[cat].append({"nom":newCourse}) 
+        except:
+            False
         self.globalCourses = newJson
 
         with open('JSON\\DL.json', 'w', encoding='utf8') as json_file:
