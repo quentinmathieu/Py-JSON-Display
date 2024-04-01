@@ -57,12 +57,16 @@ class MyGUI(QMainWindow):
         self.compressBtn.clicked.connect(lambda: self.crompressVideos())
         self.delListBtn.clicked.connect(lambda: self.deleteFromList())
         
-        self.delCat.clicked.connect(lambda: self.deleteFromCategoriesList())
-        self.addCatBtn.clicked.connect(lambda: self.addCategory())
+        
+        self.delCat.clicked.connect(lambda: self.deleteItemFromList(self.categoriesList, "category","delete"))
+        self.addCatBtn.clicked.connect(lambda: self.addItemToList(self.categoriesList, self.lineCategoryAdd, "category","add"))
         self.RefreshBtn2.clicked.connect(lambda: self.restart())
         self.RefreshBtn.clicked.connect(lambda: self.restart())
+        
+        self.delCourseFromCat.clicked.connect(lambda: self.deleteItemFromList(self.listCoursesByCat,"course","delete"))
 
 
+        self.categoriesList.itemSelectionChanged.connect(self.showCatCourses)
         self.categoriesList.model().rowsMoved.connect(self.updateJson)
 
 
@@ -82,17 +86,29 @@ class MyGUI(QMainWindow):
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
     
-    def deleteFromCategoriesList(self):
-        print("meh")
+    def showCatCourses(self):
+        self.listCoursesByCat.clear()
+        category = self.categoriesList.selectedItems()[0].text()
+        try:
+            for course in self.globalCourses[category]:
+                self.listCoursesByCat.addItem(course['nom'])
+        except:
+            False
+    
+    def deleteItemFromList(self, list,type,action):
+        print(self.listCoursesByCat.selectedItems()[0].text())
+
         self.setStatusInterface(True)
-        listItems=self.categoriesList.selectedItems()
-        if not listItems: return        
+        listItems=list.selectedItems()
+        if not listItems: return
         for item in listItems:
-            print("delet")
-            self.categoriesList.takeItem(self.categoriesList.row(item))
-        self.updateJson()
+            list.takeItem(list.row(item))
+        self.updateJson({"type":type,"action":action, "field":""})
             
-    def updateJson(self, newCat=0):
+    def updateJson(self, array):
+        newCat = array['field'] if array["type"]=="category" and array["action"]=="add" else False
+        newCourse = array['field'] if array["type"]=="course" and array["action"]=="add" else False
+        
         newJsonIndex = []
         for index in range(self.categoriesList.count()):
             newJsonIndex.append(self.categoriesList.item(index).text())
@@ -104,20 +120,35 @@ class MyGUI(QMainWindow):
             except:
                 if (newCat):
                     newJson[newCat]= {}
-        self.globalCourses = newJson
+        
+        try:
+            cat= self.categoriesList.selectedItems()[0].text() if array["type"]=="course" and array["action"]=="delete" else False
+            if cat != False:
+                categoryContent = []
+                for course in newJson[cat]:
+                    print(self.listCoursesByCat.selectedItems()[0].text())
+                    # if course['nom'] != self.listCoursesByCat.selectedItems()[0].text():
+                    #     categoryContent.append(course)
+                    # else:
+                    #     print(self.listCoursesByCat.selectedItems()[0].text())
+            # newJson[cat] = categoryContent
+        except:
+            False
             
+        self.globalCourses = newJson
+
         with open('JSON\\DL.json', 'w', encoding='utf8') as json_file:
             json.dump( newJson,json_file, ensure_ascii=False, indent=2)
         
     def restart(self):
         os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
         
-    def addCategory(self):
-        for index in range(self.categoriesList.count()):
-            if self.lineCategoryAdd.text() == self.categoriesList.item(index).text():
+    def addItemToList(self, list, field, type, action):
+        for index in range(list.count()):
+            if field.text() == list.item(index).text():
                 return False
-        self.categoriesList.addItem(self.lineCategoryAdd.text())
-        self.updateJson(self.lineCategoryAdd.text())
+        list.addItem(field.text())
+        self.updateJson({"type":type,"action":action, "field":field.text()})
         
     def changeTab(self, tabNum, size = "normal"):
         self.tabWidget.setCurrentIndex(tabNum)
@@ -125,10 +156,6 @@ class MyGUI(QMainWindow):
             self.showNormal()
         else:
             self.showFullScreen() 
-            
-    def sort_by_indexes(lst, indexes, reverse=False):
-        return [val for (_, val) in sorted(zip(indexes, lst), key=lambda x: \
-                x[0], reverse=reverse)]
 
     def loadCourses(self, jsonFile, scrollArea, type):
         
@@ -142,6 +169,8 @@ class MyGUI(QMainWindow):
                 categoryLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 if type == "DWWM":
                     self.categoriesList.addItem(categoriesIndex)
+                    self.categoriesList.setCurrentRow(0)
+                    self.showCatCourses()
 
                 #display category name
                 label = QLabel("\n{}".format(categoriesIndex))
