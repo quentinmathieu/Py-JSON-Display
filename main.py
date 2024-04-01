@@ -57,6 +57,7 @@ class MyGUI(QMainWindow):
         self.compressBtn.clicked.connect(lambda: self.crompressVideos())
         self.delListBtn.clicked.connect(lambda: self.deleteFromList())
         
+        self.delCat.clicked.connect(lambda: self.deleteFromCategoriesList())
         self.addCatBtn.clicked.connect(lambda: self.addCategory())
         self.RefreshBtn2.clicked.connect(lambda: self.restart())
         self.RefreshBtn.clicked.connect(lambda: self.restart())
@@ -81,6 +82,16 @@ class MyGUI(QMainWindow):
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
     
+    def deleteFromCategoriesList(self):
+        print("meh")
+        self.setStatusInterface(True)
+        listItems=self.categoriesList.selectedItems()
+        if not listItems: return        
+        for item in listItems:
+            print("delet")
+            self.categoriesList.takeItem(self.categoriesList.row(item))
+        self.updateJson()
+            
     def updateJson(self, newCat=0):
         newJsonIndex = []
         for index in range(self.categoriesList.count()):

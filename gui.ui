@@ -704,7 +704,7 @@ color:#636363
              <string>Add</string>
             </property>
            </widget>
-           <widget class="QPushButton" name="addCat_2">
+           <widget class="QPushButton" name="delCat">
             <property name="enabled">
              <bool>true</bool>
             </property>
