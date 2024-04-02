@@ -74,7 +74,9 @@ class MyGUI(QMainWindow):
         self.categoriesList.itemSelectionChanged.connect(self.showCatCourses)
         self.categoriesList.model().rowsMoved.connect(lambda: self.updateJson({"field":"category", "action":"move", "type":"category"}))
 
+        self.deleteFileBtn.clicked.connect(lambda:self.delFileCourse(self.filesEdit,"files"))
         
+        self.deleteCorrectionBtn.clicked.connect(lambda:self.delFileCourse(self.filesEdit,"correction_files"))
 
         # diffrents tab shortcuts
         self.shortcut = QShortcut(QKeySequence('Ctrl+a'),self)
@@ -112,7 +114,6 @@ class MyGUI(QMainWindow):
             self.descriptionEdit.setPlainText(course["description"])
             
             
-            
             for type in course['type']:
                 self.checkboxes[type].setCheckState(Qt.CheckState.Checked)
 
@@ -135,6 +136,28 @@ class MyGUI(QMainWindow):
                 self.checkboxes[box].stateChanged.connect(self.updateCourse)
         except:
             self.coursesTab.setEnabled(False)
+        
+    def delFileCourse(self, list, property):
+        courseName = self.listCoursesByCat.selectedItems()[0].text()
+        cat=self.categoriesList.selectedItems()[0].text()
+
+
+        listItems=list.selectedItems()
+        if not listItems: return
+        for item in listItems:
+            list.takeItem(list.row(item))
+        
+        files=[]
+        for courseIndex in self.globalCourses[cat]:
+            if courseName==courseIndex['nom']:
+                for file in courseIndex[property]:
+                    
+                    if listItems[0].text()!=file['name']:
+                        files.append(file)
+                courseIndex[property]=files
+                 
+        with open(self.json, 'w', encoding='utf8') as json_file:
+            json.dump(self.globalCourses,json_file, ensure_ascii=False, indent=2)
         
     def updateCourse(self):
         courseName = self.listCoursesByCat.selectedItems()[0].text()
@@ -325,10 +348,10 @@ class MyGUI(QMainWindow):
         klembord.set_with_rich_text('', clipboard.replace("\n","<br>")) 
 
     def DwwmTab(self):
-        self.loadCourses("JSON\\DL.json", (self.DwwmScrollArea), "DWWM")
-        self.loadCourses("JSON\\DL.json", (self.RanScrollArea), "RAN")
-        self.loadCourses("JSON\\DL.json", (self.cdaScrollArea), "CDA")
-        self.loadCourses("JSON\\DL.json", (self.cdaRanScrollArea), "CDARAN")
+        self.loadCourses(self.json, (self.DwwmScrollArea), "DWWM")
+        self.loadCourses(self.json, (self.RanScrollArea), "RAN")
+        self.loadCourses(self.json, (self.cdaScrollArea), "CDA")
+        self.loadCourses(self.json, (self.cdaRanScrollArea), "CDARAN")
         self.editCourse()
 
     
