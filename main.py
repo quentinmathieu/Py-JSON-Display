@@ -49,6 +49,8 @@ class MyGUI(QMainWindow):
         self.show()
         self.setWindowTitle('Training')
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
+        self.json='JSON\\DL.json'
+        self.checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
         self.DwwmTab()
         
         # add clear & concat & concat/compress action's btn
@@ -72,6 +74,8 @@ class MyGUI(QMainWindow):
         self.categoriesList.itemSelectionChanged.connect(self.showCatCourses)
         self.categoriesList.model().rowsMoved.connect(lambda: self.updateJson({"field":"category", "action":"move", "type":"category"}))
 
+        
+
         # diffrents tab shortcuts
         self.shortcut = QShortcut(QKeySequence('Ctrl+a'),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
@@ -88,15 +92,14 @@ class MyGUI(QMainWindow):
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
     
-    def editCourse(self, load=False):
-        # try:
-            checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
+    def editCourse(self):
+        try:
             #Disconnect every listener to avoid multiple call methods
             if  len(self.courseNameEdit.text())>0:
                 self.courseNameEdit.textChanged.disconnect()
                 self.descriptionEdit.textChanged.disconnect()
-                for box in checkboxes:
-                    checkboxes[box].stateChanged.disconnect()
+                for box in self.checkboxes:
+                    self.checkboxes[box].stateChanged.disconnect()
             
             self.coursesTab.setEnabled(True)
             cat = self.categoriesList.selectedItems()[0].text()
@@ -111,7 +114,7 @@ class MyGUI(QMainWindow):
             
             
             for type in course['type']:
-                checkboxes[type].setCheckState(Qt.CheckState.Checked)
+                self.checkboxes[type].setCheckState(Qt.CheckState.Checked)
 
             try:
                 self.filesEdit.clear()
@@ -126,20 +129,18 @@ class MyGUI(QMainWindow):
             except:
                 False
             
-            self.courseNameEdit.textChanged.connect(lambda:self.updateCourse())
-            self.descriptionEdit.textChanged.connect(lambda:self.updateCourse())
-            for box in checkboxes:
-                checkboxes[box].stateChanged.connect(lambda:self.updateCourse())
-            # return
-        # except:
-        #     self.coursesTab.setEnabled(False)
+            self.courseNameEdit.textChanged.connect(self.updateCourse)
+            self.descriptionEdit.textChanged.connect(self.updateCourse)
+            for box in self.checkboxes:
+                self.checkboxes[box].stateChanged.connect(self.updateCourse)
+        except:
+            self.coursesTab.setEnabled(False)
         
     def updateCourse(self):
         courseName = self.listCoursesByCat.selectedItems()[0].text()
         types=[]
-        checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
-        for box in checkboxes:
-            if (checkboxes[box].isChecked()):
+        for box in self.checkboxes:
+            if (self.checkboxes[box].isChecked()):
                 types.append(box)
             
         cat=self.categoriesList.selectedItems()[0].text()
@@ -148,8 +149,10 @@ class MyGUI(QMainWindow):
                 courseIndex['nom'] = self.courseNameEdit.text()
                 courseIndex['description'] = self.descriptionEdit.toPlainText()
                 courseIndex['type']=types
-        with open('JSON\\DL.json', 'w', encoding='utf8') as json_file:
+                self.listCoursesByCat.selectedItems()[0].setText(self.courseNameEdit.text())
+        with open(self.json, 'w', encoding='utf8') as json_file:
             json.dump(self.globalCourses,json_file, ensure_ascii=False, indent=2)
+            
         
     
     def showCatCourses(self):
@@ -185,7 +188,7 @@ class MyGUI(QMainWindow):
                 newJson[cat] = self.globalCourses[cat]
             except:
                 if (newCat):
-                    newJson[newCat]= {}
+                    newJson[newCat]= []
         
         try:
             cat= self.categoriesList.selectedItems()[0].text() if array["type"]=="course" and (array["action"]=="delete" or array["action"]=="move")  else False
@@ -205,7 +208,7 @@ class MyGUI(QMainWindow):
             False
         self.globalCourses = newJson
 
-        with open('JSON\\DL.json', 'w', encoding='utf8') as json_file:
+        with open(self.json, 'w', encoding='utf8') as json_file:
             json.dump( newJson,json_file, ensure_ascii=False, indent=2)
         
     def restart(self):
@@ -306,15 +309,15 @@ class MyGUI(QMainWindow):
                 try:
                     for file in course['files']:
                     # add path's files to the clipboard var
-                        clipboard += file['name']+" \n"
+                        clipboard += file['path']+" \n"
                         if modifiers == Qt.KeyboardModifier.ControlModifier:                 
-                            webbrowser.open(file['name'], new=2, autoraise=True)
+                            webbrowser.open(file['path'], new=2, autoraise=True)
                 except:
                     False
                 try:
                     if modifiers == Qt.KeyboardModifier.ControlModifier:
                         for correction in course['correction_files']:
-                            webbrowser.open(correction['name'], new=2, autoraise=True)
+                            webbrowser.open(correction['path'], new=2, autoraise=True)
                 except:
                     False
 
