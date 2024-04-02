@@ -625,6 +625,9 @@ QSlider::handle:horizontal:disabled{
           </rect>
          </property>
          <widget class="QTabWidget" name="tabWidgetEdit">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -637,7 +640,7 @@ QSlider::handle:horizontal:disabled{
            <string notr="true">background:white</string>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="categoriesTab">
            <attribute name="title">
@@ -940,10 +943,13 @@ color:#636363
            </widget>
           </widget>
           <widget class="QWidget" name="coursesTab">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <attribute name="title">
             <string>Courses</string>
            </attribute>
-           <widget class="QLineEdit" name="courseEdit">
+           <widget class="QLineEdit" name="courseNameEdit">
             <property name="geometry">
              <rect>
               <x>60</x>
@@ -953,7 +959,7 @@ color:#636363
              </rect>
             </property>
            </widget>
-           <widget class="QPlainTextEdit" name="plainTextEdit">
+           <widget class="QPlainTextEdit" name="descriptionEdit">
             <property name="geometry">
              <rect>
               <x>60</x>
@@ -966,63 +972,7 @@ color:#636363
              <string/>
             </property>
            </widget>
-           <widget class="QListView" name="listView">
-            <property name="geometry">
-             <rect>
-              <x>60</x>
-              <y>350</y>
-              <width>241</width>
-              <height>151</height>
-             </rect>
-            </property>
-           </widget>
-           <widget class="QListView" name="listView_2">
-            <property name="geometry">
-             <rect>
-              <x>400</x>
-              <y>350</y>
-              <width>241</width>
-              <height>151</height>
-             </rect>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="addCat_3">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>650</x>
-              <y>50</y>
-              <width>55</width>
-              <height>33</height>
-             </rect>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton{background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:5;color: white; font-weight:600;padding :10px}
-
-QPushButton:disabled {
-background-color:#989898;
-color:#636363
-}</string>
-            </property>
-            <property name="text">
-             <string>Link</string>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="addCat_4">
+           <widget class="QPushButton" name="deleteFileBtn">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -1058,7 +1008,7 @@ color:#636363
              <string>DEL</string>
             </property>
            </widget>
-           <widget class="QPushButton" name="addCat_5">
+           <widget class="QPushButton" name="deleteCorrectionBtn">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -1094,7 +1044,7 @@ color:#636363
              <string>DEL</string>
             </property>
            </widget>
-           <widget class="QPushButton" name="addCat_7">
+           <widget class="QPushButton" name="addFileBtn">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -1130,7 +1080,7 @@ color:#636363
              <string>Add</string>
             </property>
            </widget>
-           <widget class="QLineEdit" name="lineEdit_2">
+           <widget class="QLineEdit" name="pathFileAdd">
             <property name="geometry">
              <rect>
               <x>60</x>
@@ -1140,7 +1090,7 @@ color:#636363
              </rect>
             </property>
            </widget>
-           <widget class="QLineEdit" name="lineEdit_3">
+           <widget class="QLineEdit" name="pathCorrectionAdd">
             <property name="geometry">
              <rect>
               <x>400</x>
@@ -1148,78 +1098,6 @@ color:#636363
               <width>241</width>
               <height>31</height>
              </rect>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="addCat_8">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>650</x>
-              <y>90</y>
-              <width>55</width>
-              <height>33</height>
-             </rect>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton{background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:5;color: white; font-weight:600;padding :10px}
-
-QPushButton:disabled {
-background-color:#989898;
-color:#636363
-}</string>
-            </property>
-            <property name="text">
-             <string>Save</string>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="addCat_9">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>350</x>
-              <y>10</y>
-              <width>55</width>
-              <height>31</height>
-             </rect>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton{background-color: qlineargradient(x1: 0, y1:0, x2: 1, y2:1, stop: 0 #206a95, stop: 1 #153754); border-radius:5;color: white; font-weight:600;padding :10px}
-
-QPushButton:disabled {
-background-color:#989898;
-color:#636363
-}</string>
-            </property>
-            <property name="text">
-             <string>Save</string>
             </property>
            </widget>
            <widget class="QPushButton" name="RefreshBtn2">
@@ -1258,7 +1136,7 @@ color:#636363
              <string>Refresh</string>
             </property>
            </widget>
-           <widget class="QLineEdit" name="lineEdit_8">
+           <widget class="QLineEdit" name="nameFileAdd">
             <property name="geometry">
              <rect>
               <x>60</x>
@@ -1268,7 +1146,7 @@ color:#636363
              </rect>
             </property>
            </widget>
-           <widget class="QLineEdit" name="lineEdit_9">
+           <widget class="QLineEdit" name="nameCorrectionAdd">
             <property name="geometry">
              <rect>
               <x>400</x>
@@ -1278,7 +1156,7 @@ color:#636363
              </rect>
             </property>
            </widget>
-           <widget class="QPushButton" name="addCat_10">
+           <widget class="QPushButton" name="addCorrectionBtn">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -1313,6 +1191,103 @@ color:#636363
             <property name="text">
              <string>Add</string>
             </property>
+           </widget>
+           <widget class="QListWidget" name="filesEdit">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>350</y>
+              <width>241</width>
+              <height>151</height>
+             </rect>
+            </property>
+           </widget>
+           <widget class="QListWidget" name="correctionsEdit">
+            <property name="geometry">
+             <rect>
+              <x>400</x>
+              <y>350</y>
+              <width>241</width>
+              <height>151</height>
+             </rect>
+            </property>
+           </widget>
+           <widget class="QWidget" name="gridLayoutWidget">
+            <property name="geometry">
+             <rect>
+              <x>650</x>
+              <y>50</y>
+              <width>141</width>
+              <height>131</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="checkDwwm">
+               <property name="text">
+                <string>DWWM</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="checkOptDwwm">
+               <property name="text">
+                <string>opt</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QCheckBox" name="checkOptCda">
+               <property name="text">
+                <string>opt</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QCheckBox" name="checkOptRan">
+               <property name="text">
+                <string>opt</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="checkRan">
+               <property name="text">
+                <string>RAN</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="checkCda">
+               <property name="text">
+                <string>CDA</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="checkCdaRan">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>CDA-RAN</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QCheckBox" name="checkOptCdaRan">
+               <property name="text">
+                <string>opt</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </widget>
          </widget>

@@ -56,7 +56,7 @@ class MyGUI(QMainWindow):
         self.concatBtn.clicked.connect(lambda: self.on_click())
         self.compressBtn.clicked.connect(lambda: self.crompressVideos())
         self.delListBtn.clicked.connect(lambda: self.deleteFromList())
-        
+
         
         self.delCat.clicked.connect(lambda: self.deleteItemFromList(self.categoriesList, "category","delete"))
         self.addCatBtn.clicked.connect(lambda: self.addItemToList(self.categoriesList, self.lineCategoryAdd, "category","add"))
@@ -66,11 +66,11 @@ class MyGUI(QMainWindow):
         self.addCourseToCat.clicked.connect(lambda: self.addItemToList(self.listCoursesByCat, self.lineCourseAdd, "course","add"))
         self.delCourseFromCat.clicked.connect(lambda: self.deleteItemFromList(self.listCoursesByCat,"course","delete"))
         self.listCoursesByCat.model().rowsMoved.connect(lambda: self.updateJson({"field":"course", "action":"move", "type":"course"}))
+        self.listCoursesByCat.itemSelectionChanged.connect(self.editCourse)
 
 
         self.categoriesList.itemSelectionChanged.connect(self.showCatCourses)
         self.categoriesList.model().rowsMoved.connect(lambda: self.updateJson({"field":"category", "action":"move", "type":"category"}))
-
 
         # diffrents tab shortcuts
         self.shortcut = QShortcut(QKeySequence('Ctrl+a'),self)
@@ -87,6 +87,63 @@ class MyGUI(QMainWindow):
         self.shortcut.activated.connect(lambda: self.changeTab(5, "fullsize"))
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
+    
+    def editCourse(self):
+        try:
+            self.coursesTab.setEnabled(True)
+
+            cat = self.categoriesList.selectedItems()[0].text()
+            course = self.listCoursesByCat.selectedItems()[0].text()
+            for courseIndex in self.globalCourses[cat]:
+                if courseIndex["nom"]==course:
+                    course=courseIndex
+            self.courseNameEdit.setText(course["nom"])
+            self.descriptionEdit.setPlainText(course["description"])
+            course['description'] = self.descriptionEdit.toPlainText()
+            
+            checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
+            
+            
+            for type in course['type']:
+                checkboxes[type].setCheckState(Qt.CheckState.Checked)
+                
+            for box in checkboxes:
+                checkboxes[box].stateChanged.connect(lambda:self.updateCourse(cat,course))
+
+            try:
+                self.filesEdit.clear()
+                for file in course["files"]:
+                    self.filesEdit.addItem(file["name"])
+            except:
+                False
+            try:
+                self.correctionsEdit.clear()
+                for correction in course["correction_files"]:
+                    self.correctionsEdit.addItem(correction["name"])
+            except:
+                False
+            self.courseNameEdit.textChanged.connect(lambda:self.updateCourse(cat, course))
+            self.descriptionEdit.textChanged.connect(lambda:self.updateCourse(cat, course))
+        except:
+            self.coursesTab.setEnabled(False)
+        
+    def updateCourse(self,cat,course):
+        types=[]
+        checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
+        for box in checkboxes:
+            if (checkboxes[box].isChecked()):
+                types.append(box)
+            
+        cat=self.categoriesList.selectedItems()[0].text()
+        for courseIndex in self.globalCourses[cat]:
+            if course['nom']==courseIndex['nom']:
+                courseIndex=course
+                courseIndex['nom'] = self.courseNameEdit.text()
+                courseIndex['description'] = self.descriptionEdit.toPlainText()
+                courseIndex['type']=types
+        with open('JSON\\DL.json', 'w', encoding='utf8') as json_file:
+            json.dump(self.globalCourses,json_file, ensure_ascii=False, indent=2)
+        
     
     def showCatCourses(self):
         self.listCoursesByCat.clear()
@@ -136,7 +193,7 @@ class MyGUI(QMainWindow):
             False
         try:
             cat= self.categoriesList.selectedItems()[0].text() if array["type"]=="course" and array["action"]=="add" else False
-            newJson[cat].append({"nom":newCourse}) 
+            newJson[cat].append({"nom":newCourse, "description":"", "files":[],"correction_files":[], "type": ["DWWM","CDA","CDARAN","RAN"]}) 
         except:
             False
         self.globalCourses = newJson
@@ -175,6 +232,10 @@ class MyGUI(QMainWindow):
                     self.categoriesList.addItem(categoriesIndex)
                     self.categoriesList.setCurrentRow(0)
                     self.showCatCourses()
+                    try:
+                        self.listCoursesByCat.setCurrentRow(0)
+                    except:
+                        False
 
                 #display category name
                 label = QLabel("\n{}".format(categoriesIndex))
@@ -204,7 +265,7 @@ class MyGUI(QMainWindow):
                             coursesLayout.addWidget(courseBtn,  count//3, count%3)
                             count+=1
                 except:
-                    print('meh')
+                    False
                 coursesWidget = QWidget()
                 coursesWidget.setLayout(coursesLayout)
                 categoryWidget = QWidget()
@@ -217,7 +278,8 @@ class MyGUI(QMainWindow):
                 # break
                 if(scrollArea == self.RanScrollArea):
                     break
-        scrollArea.setWidget(scrollWidget)   
+        scrollArea.setWidget(scrollWidget)
+   
     
     def copyBuffer(self):
         categoryName = self.sender().parent().parent().findChild(QLabel).text()
@@ -257,6 +319,7 @@ class MyGUI(QMainWindow):
         self.loadCourses("JSON\\DL.json", (self.RanScrollArea), "RAN")
         self.loadCourses("JSON\\DL.json", (self.cdaScrollArea), "CDA")
         self.loadCourses("JSON\\DL.json", (self.cdaRanScrollArea), "CDARAN")
+        self.editCourse()
 
     
     def on_click(self):
