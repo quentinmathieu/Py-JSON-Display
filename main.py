@@ -88,27 +88,30 @@ class MyGUI(QMainWindow):
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
     
-    def editCourse(self):
-        try:
+    def editCourse(self, load=False):
+        # try:
+            checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
+            #Disconnect every listener to avoid multiple call methods
+            if  len(self.courseNameEdit.text())>0:
+                self.courseNameEdit.textChanged.disconnect()
+                self.descriptionEdit.textChanged.disconnect()
+                for box in checkboxes:
+                    checkboxes[box].stateChanged.disconnect()
+            
             self.coursesTab.setEnabled(True)
-
             cat = self.categoriesList.selectedItems()[0].text()
             course = self.listCoursesByCat.selectedItems()[0].text()
             for courseIndex in self.globalCourses[cat]:
                 if courseIndex["nom"]==course:
                     course=courseIndex
+                    break
             self.courseNameEdit.setText(course["nom"])
             self.descriptionEdit.setPlainText(course["description"])
-            course['description'] = self.descriptionEdit.toPlainText()
             
-            checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
             
             
             for type in course['type']:
                 checkboxes[type].setCheckState(Qt.CheckState.Checked)
-                
-            for box in checkboxes:
-                checkboxes[box].stateChanged.connect(lambda:self.updateCourse(cat,course))
 
             try:
                 self.filesEdit.clear()
@@ -122,12 +125,17 @@ class MyGUI(QMainWindow):
                     self.correctionsEdit.addItem(correction["name"])
             except:
                 False
-            self.courseNameEdit.textChanged.connect(lambda:self.updateCourse(cat, course))
-            self.descriptionEdit.textChanged.connect(lambda:self.updateCourse(cat, course))
-        except:
-            self.coursesTab.setEnabled(False)
+            
+            self.courseNameEdit.textChanged.connect(lambda:self.updateCourse())
+            self.descriptionEdit.textChanged.connect(lambda:self.updateCourse())
+            for box in checkboxes:
+                checkboxes[box].stateChanged.connect(lambda:self.updateCourse())
+            # return
+        # except:
+        #     self.coursesTab.setEnabled(False)
         
-    def updateCourse(self,cat,course):
+    def updateCourse(self):
+        courseName = self.listCoursesByCat.selectedItems()[0].text()
         types=[]
         checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
         for box in checkboxes:
@@ -136,8 +144,7 @@ class MyGUI(QMainWindow):
             
         cat=self.categoriesList.selectedItems()[0].text()
         for courseIndex in self.globalCourses[cat]:
-            if course['nom']==courseIndex['nom']:
-                courseIndex=course
+            if courseName==courseIndex['nom']:
                 courseIndex['nom'] = self.courseNameEdit.text()
                 courseIndex['description'] = self.descriptionEdit.toPlainText()
                 courseIndex['type']=types
