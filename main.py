@@ -76,7 +76,11 @@ class MyGUI(QMainWindow):
 
         self.deleteFileBtn.clicked.connect(lambda:self.delFileCourse(self.filesEdit,"files"))
         
-        self.deleteCorrectionBtn.clicked.connect(lambda:self.delFileCourse(self.filesEdit,"correction_files"))
+        self.deleteCorrectionBtn.clicked.connect(lambda:self.delFileCourse(self.correctionsEdit,"correction_files"))
+        
+        self.addFileBtn.clicked.connect(lambda:self.addFileCourse(self.nameFileAdd, self.pathFileAdd,"files", self.filesEdit))
+        
+        self.addCorrectionBtn.clicked.connect(lambda:self.addFileCourse(self.nameCorrectionAdd, self.pathCorrectionAdd,"correction_files", self.correctionsEdit))
 
         # diffrents tab shortcuts
         self.shortcut = QShortcut(QKeySequence('Ctrl+a'),self)
@@ -141,7 +145,6 @@ class MyGUI(QMainWindow):
         courseName = self.listCoursesByCat.selectedItems()[0].text()
         cat=self.categoriesList.selectedItems()[0].text()
 
-
         listItems=list.selectedItems()
         if not listItems: return
         for item in listItems:
@@ -151,11 +154,24 @@ class MyGUI(QMainWindow):
         for courseIndex in self.globalCourses[cat]:
             if courseName==courseIndex['nom']:
                 for file in courseIndex[property]:
-                    
                     if listItems[0].text()!=file['name']:
                         files.append(file)
                 courseIndex[property]=files
                  
+        with open(self.json, 'w', encoding='utf8') as json_file:
+            json.dump(self.globalCourses,json_file, ensure_ascii=False, indent=2)
+            
+    def addFileCourse(self, nameField, pathField, property, list):
+        courseName = self.listCoursesByCat.selectedItems()[0].text()
+        cat=self.categoriesList.selectedItems()[0].text()
+        
+        newFile = {"name":nameField.text(), "path":pathField.text()}
+        for courseIndex in self.globalCourses[cat]:
+            if courseName==courseIndex['nom']:
+                courseIndex[property].append(newFile)
+        list.addItem(nameField.text())
+        nameField.setText("")
+        pathField.setText("")
         with open(self.json, 'w', encoding='utf8') as json_file:
             json.dump(self.globalCourses,json_file, ensure_ascii=False, indent=2)
         
