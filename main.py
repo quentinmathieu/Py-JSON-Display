@@ -96,13 +96,13 @@ class MyGUI(QMainWindow):
         self.shortcut = QShortcut(QKeySequence('Ctrl+t'),self)
         self.shortcut.activated.connect(lambda: self.changeTab(4))
         self.shortcut = QShortcut(QKeySequence('Ctrl+tab'),self)
-        self.shortcut.activated.connect(lambda: self.changeTab(5, "fullsize"))
+        self.shortcut.activated.connect(lambda: self.changeTab(5))
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
     
     def editCourse(self):
-        # try:
-            #Disconnect every listener to avoid multiple call methods
+        try:
+            #Disconnect every listener to avoid multiple call methods on category switch
             if  len(self.courseNameEdit.text())>0:
                 self.courseNameEdit.textChanged.disconnect()
                 self.descriptionEdit.textChanged.disconnect()
@@ -110,6 +110,8 @@ class MyGUI(QMainWindow):
                     self.checkboxes[box].stateChanged.disconnect()
             self.coursesTab.setEnabled(True)
             cat = self.categoriesList.selectedItems()[0].text()
+            
+            # get course info or lock the interface
             try:
                 course = self.listCoursesByCat.selectedItems()[0].text()
             except:
@@ -120,6 +122,7 @@ class MyGUI(QMainWindow):
                 self.coursesTab.setEnabled(False)
                 return
             
+            # fill the field's values with JSON datas
             for courseIndex in self.globalCourses[cat]:
                 if courseIndex["nom"]==course:
                     course=courseIndex
@@ -127,9 +130,14 @@ class MyGUI(QMainWindow):
             self.courseNameEdit.setText(course["nom"])
             self.descriptionEdit.setPlainText(course["description"])
             
+            # uncheck all type in UI
+            for typeIndex in self.checkboxes:
+                self.checkboxes[typeIndex].setCheckState(Qt.CheckState.Unchecked)
+            # check course's types in UI 
             for type in course['type']:
                 self.checkboxes[type].setCheckState(Qt.CheckState.Checked)
 
+            #  If there are files and corrections files display them
             try:
                 self.filesEdit.clear()
                 for file in course["files"]:
@@ -143,12 +151,13 @@ class MyGUI(QMainWindow):
             except:
                 False
             
+            # put connect listeners on fields and checkboxes
             self.courseNameEdit.textChanged.connect(self.updateCourse)
             self.descriptionEdit.textChanged.connect(self.updateCourse)
             for box in self.checkboxes:
                 self.checkboxes[box].stateChanged.connect(self.updateCourse)
-        # except:
-        #     self.coursesTab.setEnabled(False)
+        except:
+            self.coursesTab.setEnabled(False)
         
     def delFileCourse(self, list, property):
         courseName = self.listCoursesByCat.selectedItems()[0].text()
@@ -273,6 +282,8 @@ class MyGUI(QMainWindow):
                 return False
         list.addItem(field.text())
         self.updateJson({"type":type,"action":action, "field":field.text()})
+        field.setText("")
+        list.setCurrentRow(list.count()-1)
         
     def changeTab(self, tabNum, size = "normal"):
         self.tabWidget.setCurrentIndex(tabNum)

@@ -18,8 +18,8 @@
 9. ~~M.read all files and corrections~~
 10. C.Add different colors for different trainings
 11. S.save JSON
-12. M.Fix bug type
-14. C.clear the lineEdit after add
+12. ~~M.Fix bug type~~
+14. ~~C.clear the lineEdit after add~~
 
 
 
