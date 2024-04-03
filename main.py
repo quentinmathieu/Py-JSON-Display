@@ -74,6 +74,8 @@ class MyGUI(QMainWindow):
         self.categoriesList.itemSelectionChanged.connect(self.showCatCourses)
         self.categoriesList.model().rowsMoved.connect(lambda: self.updateJson({"field":"category", "action":"move", "type":"category"}))
 
+        
+        self.editCourseBtn.clicked.connect(self.changeTabEdit)
         self.deleteFileBtn.clicked.connect(lambda:self.delFileCourse(self.filesEdit,"files"))
         
         self.deleteCorrectionBtn.clicked.connect(lambda:self.delFileCourse(self.correctionsEdit,"correction_files"))
@@ -99,24 +101,31 @@ class MyGUI(QMainWindow):
         self.shortcut.activated.connect(lambda: self.changeTab(0))
     
     def editCourse(self):
-        try:
+        # try:
             #Disconnect every listener to avoid multiple call methods
             if  len(self.courseNameEdit.text())>0:
                 self.courseNameEdit.textChanged.disconnect()
                 self.descriptionEdit.textChanged.disconnect()
                 for box in self.checkboxes:
                     self.checkboxes[box].stateChanged.disconnect()
-            
             self.coursesTab.setEnabled(True)
             cat = self.categoriesList.selectedItems()[0].text()
-            course = self.listCoursesByCat.selectedItems()[0].text()
+            try:
+                course = self.listCoursesByCat.selectedItems()[0].text()
+            except:
+                self.courseNameEdit.textChanged.connect(self.updateCourse)
+                self.descriptionEdit.textChanged.connect(self.updateCourse)
+                for box in self.checkboxes:
+                    self.checkboxes[box].stateChanged.connect(self.updateCourse)
+                self.coursesTab.setEnabled(False)
+                return
+            
             for courseIndex in self.globalCourses[cat]:
                 if courseIndex["nom"]==course:
                     course=courseIndex
                     break
             self.courseNameEdit.setText(course["nom"])
             self.descriptionEdit.setPlainText(course["description"])
-            
             
             for type in course['type']:
                 self.checkboxes[type].setCheckState(Qt.CheckState.Checked)
@@ -138,8 +147,8 @@ class MyGUI(QMainWindow):
             self.descriptionEdit.textChanged.connect(self.updateCourse)
             for box in self.checkboxes:
                 self.checkboxes[box].stateChanged.connect(self.updateCourse)
-        except:
-            self.coursesTab.setEnabled(False)
+        # except:
+        #     self.coursesTab.setEnabled(False)
         
     def delFileCourse(self, list, property):
         courseName = self.listCoursesByCat.selectedItems()[0].text()
@@ -157,7 +166,7 @@ class MyGUI(QMainWindow):
                     if listItems[0].text()!=file['name']:
                         files.append(file)
                 courseIndex[property]=files
-                 
+
         with open(self.json, 'w', encoding='utf8') as json_file:
             json.dump(self.globalCourses,json_file, ensure_ascii=False, indent=2)
             
@@ -193,18 +202,23 @@ class MyGUI(QMainWindow):
             json.dump(self.globalCourses,json_file, ensure_ascii=False, indent=2)
             
         
-    
+
     def showCatCourses(self):
+        if  len(self.courseNameEdit.text())>0:
+            self.listCoursesByCat.itemSelectionChanged.disconnect()
         self.listCoursesByCat.clear()
         category = self.categoriesList.selectedItems()[0].text()
         try:
             for course in self.globalCourses[category]:
                 self.listCoursesByCat.addItem(course['nom'])
+            self.listCoursesByCat.setCurrentRow(0)
         except:
             False
+        self.listCoursesByCat.itemSelectionChanged.connect(lambda:self.editCourse())
+        self.editCourse()
     
     def deleteItemFromList(self, list,type,action):
-        remove = self.listCoursesByCat.selectedItems()[0].text()
+        remove = list.selectedItems()[0].text()
 
         self.setStatusInterface(True)
         listItems=list.selectedItems()
@@ -266,6 +280,9 @@ class MyGUI(QMainWindow):
             self.showNormal()
         else:
             self.showFullScreen() 
+            
+    def changeTabEdit(self):
+        self.tabWidgetEdit.setCurrentIndex(1)
 
     def loadCourses(self, jsonFile, scrollArea, type):
         
@@ -348,7 +365,7 @@ class MyGUI(QMainWindow):
                 try:
                     for file in course['files']:
                     # add path's files to the clipboard var
-                        clipboard += file['path']+" \n"
+                        clipboard += " \n\n<a href='"+file['path']+"'>"+file['name']+"</a>"
                         if modifiers == Qt.KeyboardModifier.ControlModifier:                 
                             webbrowser.open(file['path'], new=2, autoraise=True)
                 except:

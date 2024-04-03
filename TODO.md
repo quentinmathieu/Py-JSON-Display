@@ -7,7 +7,7 @@
  ░░░░░██░░░░░██████░░██████░░░██████░░  
 #
 
-1. S.add JSON editor
+1. ~~S.add JSON editor~~
 2. ~~S.add concat video~~
 3. ~~C.add compress+/concat feature~~
 4. ~~M.add type of training in the JSON~~
@@ -18,6 +18,8 @@
 9. ~~M.read all files and corrections~~
 10. C.Add different colors for different trainings
 11. S.save JSON
+12. M.Fix bug type
+14. C.clear the lineEdit after add
 
 
 

@@ -83,7 +83,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>0</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -640,7 +640,7 @@ QSlider::handle:horizontal:disabled{
            <string notr="true">background:white</string>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="categoriesTab">
            <attribute name="title">
@@ -869,7 +869,7 @@ color:#636363
              <string>DEL</string>
             </property>
            </widget>
-           <widget class="QPushButton" name="addCat_12">
+           <widget class="QPushButton" name="editCourseBtn">
             <property name="enabled">
              <bool>true</bool>
             </property>
