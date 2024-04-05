@@ -49,6 +49,7 @@ class MyGUI(QMainWindow):
         self.show()
         self.setWindowTitle('Training')
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
+        self.saveJson()
         self.json='JSON\\DL.json'
         self.checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
         self.DwwmTab()
@@ -99,6 +100,12 @@ class MyGUI(QMainWindow):
         self.shortcut.activated.connect(lambda: self.changeTab(5))
         self.shortcut = QShortcut(QKeySequence(Qt.Key.Key_Escape),self)
         self.shortcut.activated.connect(lambda: self.changeTab(0))
+    
+    def saveJson(self):
+        # Save the JSON file each a day
+        todaySave = ('JSON\\save\\save_{}.json'.format(datetime.today().strftime('%Y-%m-%d')))
+        if not os.path.isfile(todaySave):
+            os.system('copy JSON\\DL.json JSON\\save\\save_{}.json'.format(datetime.today().strftime('%Y-%m-%d')))
     
     def editCourse(self):
         try:
@@ -274,7 +281,8 @@ class MyGUI(QMainWindow):
             json.dump( newJson,json_file, ensure_ascii=False, indent=2)
         
     def restart(self):
-        os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
+        os.execl(sys.executable, '"{}"'.format(sys.executable), *sys.argv)
+        exit()
         
     def addItemToList(self, list, field, type, action):
         for index in range(list.count()):
@@ -352,9 +360,6 @@ class MyGUI(QMainWindow):
                 categoryWidget.setContentsMargins(0, 0, 0, 30)
                 if count > 0:
                     scrollLayout.addWidget(categoryWidget)
-                # break
-                if(scrollArea == self.RanScrollArea):
-                    break
         scrollArea.setWidget(scrollWidget)
    
     

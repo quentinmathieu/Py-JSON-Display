@@ -4,7 +4,7 @@ JSON-DISPLAY is a Python app that displays / edits JSON files
 
 ## Installation
 
-Use the following packages before runing  the app:
+Install the following packages before runing the app:
 
 ```bash
 pip install pyQt6 klembord ffmpeg-python psutil

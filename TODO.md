@@ -12,7 +12,7 @@
 3. ~~C.add compress+/concat feature~~
 4. ~~M.add type of training in the JSON~~
 5. ~~M.Add optionnal type for courses~~
-6. M.fill the JSON
+6. M.fill the json with datas
 7. C.Add searchbar
 8. ~~S.Add tab num shortcut~~
 9. ~~M.read all files and corrections~~
@@ -20,6 +20,7 @@
 11. S.save JSON
 12. ~~M.Fix bug type~~
 14. ~~C.clear the lineEdit after add~~
+15. S.placeholders for fields
 
 
 
