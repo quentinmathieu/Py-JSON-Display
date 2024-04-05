@@ -374,14 +374,14 @@ class MyGUI(QMainWindow):
             if course['nom'] == courseName:
                 try:
                     # add description to the clipboard var
-                    clipboard = course['description']
+                    clipboard = course['description']+'\n'
                 except:
-                    clipboard = ""
+                    clipboard = "\n"
                 modifiers = QApplication.keyboardModifiers()
                 try:
                     for file in course['files']:
                     # add path's files to the clipboard var
-                        clipboard += " \n\n<a href='"+file['path']+"'>"+file['name']+"</a>"
+                        clipboard += " <a href='"+file['path']+"'>"+"🗎"+"</a>"
                         if modifiers == Qt.KeyboardModifier.ControlModifier:                 
                             webbrowser.open(file['path'], new=2, autoraise=True)
                 except:

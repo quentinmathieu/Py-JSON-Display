@@ -1,7 +1,7 @@
 @echo off
 @REM DO NOT USE THIS FILE !!
 exit
-cd "%USERPROFILE%\Elan Formation\SharePoint - Equipe-Elan - Documents\Ressources_Equipe\DL\App"
+cd "%USERPROFILE%\PathToMain.py"
 
 @REM copy the script in startup windows's programs
 set startup="%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
