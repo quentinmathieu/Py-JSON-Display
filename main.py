@@ -51,7 +51,7 @@ class MyGUI(QMainWindow):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
         self.saveJson()
         self.json='JSON\\DL.json'
-        self.checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTDCA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
+        self.checkboxes = {"DWWM":self.checkDwwm, "OPTDWWM":self.checkOptDwwm, "RAN":self.checkRan,"OPTRAN":self.checkOptRan, "CDA":self.checkCda, "OPTCDA":self.checkOptCda, "CDARAN":self.checkCdaRan, "OPTCDARAN":self.checkOptCdaRan}
         self.DwwmTab()
         
         # add clear & concat & concat/compress action's btn
@@ -379,11 +379,19 @@ class MyGUI(QMainWindow):
                     clipboard = "\n"
                 modifiers = QApplication.keyboardModifiers()
                 try:
+                    countFiles = 0
+
                     for file in course['files']:
-                    # add path's files to the clipboard var
-                        clipboard += " <a href='"+file['path']+"'>"+"🗎"+"</a>"
+                        countFiles+=1
+                        # add path's files to the clipboard var
+                        clipboard += " <a href='"+file['path']+"'>🗒️&#160;</a>"
                         if modifiers == Qt.KeyboardModifier.ControlModifier:                 
                             webbrowser.open(file['path'], new=2, autoraise=True)
+                    if countFiles > 1:
+                        clipboard+=" {} fichiers:".format(countFiles)
+                    elif countFiles > 0:
+                        clipboard+=" {} fichier:".format(countFiles)
+
                 except:
                     False
                 try:
